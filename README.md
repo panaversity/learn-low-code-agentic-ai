@@ -114,7 +114,7 @@ Here’s a clear, beginner-friendly way to see **n8n as an agentic AI platform**
 
 ![](compare.jpg)
 
-Agentic AI platforms can be introduced as a continuum—**no-code**, **low-code**, and **full-code**—that aligns delivery speed with architectural control as solutions mature. **No-code** platforms provide visual builders, templates, and managed connectors so non-developers can assemble agent workflows quickly and safely. **Low-code** platforms retain a visual canvas but add programmable “escape hatches” (custom logic, APIs, components) to handle real-world variability while preserving rapid iteration for internal tools and orchestration. **Full-code** platforms expose full SDKs and runtime control, enabling engineers to implement bespoke agent behaviors, enforce testing and observability, integrate with existing services, and meet performance, security, and compliance requirements. A pragmatic adoption path for developers is to ideate in low-code for fastest validation and prototying,and graduate the durable or business-critical workloads to full-code for long-term reliability and scale.
+Agentic AI platforms can be introduced as a continuum—**no-code**, **low-code**, and **full-code**—that aligns delivery speed with architectural control as solutions mature. **No-code** platforms provide visual builders, templates, and managed connectors so non-developers can assemble agent workflows quickly and safely. **Low-code** platforms retain a visual canvas but add programmable “escape hatches” (custom logic, APIs, components) to handle real-world variability while preserving rapid iteration for internal tools and orchestration. **Full-code** platforms expose full SDKs and runtime control, enabling engineers to implement bespoke agent behaviors, enforce testing and observability, integrate with existing services, and meet performance, security, and compliance requirements. A pragmatic adoption path for developers is to ideate in low-code for fastest validation and prototying, and graduate the durable or business-critical workloads to full-code for long-term reliability and scale.
 
 Here’s a crisp way to tell them apart and know when to use which.
 
@@ -181,7 +181,7 @@ In short: we bet on the winners in each category to move faster now and scale sa
 
 ---
 
-## Comparision of n8n Skills vs OpenAI Agents SDK skills for Enterprise Development, Startups, and Freelancing
+## Comparison of n8n Skills vs OpenAI Agents SDK skills for Enterprise Development, Startups, and Freelancing
 
 Let’s do a **three-way comparison** of **n8n skills** vs **OpenAI Agents SDK skills**, and examine **how useful they are in enterprise development, startups, and freelancing**.
 
