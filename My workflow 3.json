@@ -1,0 +1,169 @@
+{
+  "name": "My workflow 3",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        -96
+      ],
+      "id": "7547ee00-c47a-4cb7-a5b2-b97ff64d9fde",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "resource": "donkiSolarFlare",
+        "additionalFields": {
+          "startDate": "2025-08-28T00:00:00",
+          "endDate": "2025-08-21T00:00:00"
+        }
+      },
+      "type": "n8n-nodes-base.nasa",
+      "typeVersion": 1,
+      "position": [
+        224,
+        -96
+      ],
+      "id": "10bf0118-d7c0-47d7-9984-b150fe817bc0",
+      "name": "Get a DONKI solar flare",
+      "credentials": {
+        "nasaApi": {
+          "id": "uAWx5Lk4uieJ5qCN",
+          "name": "NASA account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "11c8aaec-61a9-4283-92e8-b4aa0999acbc",
+              "leftValue": "={{ $json.classType }}",
+              "rightValue": "C",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "ce89462f-4496-4eca-ad6b-e8fb6051c6fb",
+              "leftValue": "={{ $json.classType }}",
+              "rightValue": "M",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        448,
+        -96
+      ],
+      "id": "5f106e59-d25a-410c-b88f-5528a2e6c909",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "resource": "request",
+        "operation": "send",
+        "binId": "1756354400332-5166483689099",
+        "binContent": "={{ $('Get a DONKI solar flare').item.json.classType }}",
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.postBin",
+      "typeVersion": 1,
+      "position": [
+        688,
+        48
+      ],
+      "id": "76710fdf-a53b-4ceb-919e-2e8e616e8522",
+      "name": "Send a request1"
+    },
+    {
+      "parameters": {
+        "resource": "request",
+        "operation": "send",
+        "binId": "1756354400332-5166483689099",
+        "binContent": "=There was a solar flare of class {{$json[\"classType\"]}}",
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.postBin",
+      "typeVersion": 1,
+      "position": [
+        672,
+        -96
+      ],
+      "id": "2981eea6-2715-4167-b13e-e266b18f163b",
+      "name": "Send a request"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get a DONKI solar flare",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a DONKI solar flare": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Send a request",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "cc4b17c1-3bfe-4bbe-b093-4ce15f789c2f",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "5381e0651d1d6c4c3d47522dce3f9cda2699e7f02a7c1633e6ac3d0415a4e565"
+  },
+  "id": "0Mfv1RBdH1T6fCQj",
+  "tags": []
+}
