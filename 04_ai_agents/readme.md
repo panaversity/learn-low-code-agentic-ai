@@ -1,5 +1,50 @@
 # AI Agents
 
+## n8n Agentic AI Class Presentations:
+
+Classes on Wednesday and Thursday at 8:00 pm on Zoom
+https://us06web.zoom.us/j/85338730622?pwd=KBNfeMPBhDTN7GMi7lH9K5UN6APAt9.1
+
+1. Junaid: Fundamentals
+https://docs.n8n.io/integrations/builtin/cluster-nodes/root-nodes/n8n-nodes-langchain.agent/
+https://docs.n8n.io/integrations/builtin/cluster-nodes/
+https://n8n.io/workflows/6270-build-your-first-ai-agent/
+
+2. Aneeq: Intro Tutorials 
+https://docs.n8n.io/advanced-ai/intro-tutorial/
+https://github.com/panaversity/learn-low-code-agentic-ai/blob/main/04_ai_agents/n8n_beginner_tutorial.md
+
+3. Hammad: Multi-Agent
+https://github.com/panaversity/learn-low-code-agentic-ai/blob/main/04_ai_agents/n8n_multi_agent_tutorial.md
+
+4. Ameen: Advanced AI Examples and Concepts
+https://docs.n8n.io/advanced-ai/examples/introduction/
+Topics to be covered in this page by Ameen: 
+a. Agents and chains
+b. Call n8n Workflow Tool
+
+5. Qasim:
+https://docs.n8n.io/advanced-ai/examples/introduction/
+Topics to be covered in this page by Qasim: 
+a. Vector databases
+b. Memory
+
+6. Aneeq: Langchain in n8n
+https://github.com/panaversity/learn-low-code-agentic-ai/tree/main/04_ai_agents#step-4-langchain-in-n8n
+
+7. Hammad: LangSmith
+https://github.com/panaversity/learn-low-code-agentic-ai/tree/main/04_ai_agents#step-5-langsmith-in-n8n
+
+8. Ameen: Five Single AI Agent Architectures
+https://github.com/panaversity/learn-low-code-agentic-ai/tree/main/04_ai_agents#step-8-ai-agent-architectures
+
+9. Qasim: Three Multiple AI Agents Architectures
+https://github.com/panaversity/learn-low-code-agentic-ai/tree/main/04_ai_agents#step-8-ai-agent-architectures
+
+10. Junaid: Evaluations
+https://github.com/panaversity/learn-low-code-agentic-ai/blob/main/04_ai_agents/evals.md
+
+
 ### What are AI agents?
 An AI agent is an autonomous system that receives data, makes rational decisions, and acts within its environment to achieve specific goals.
 

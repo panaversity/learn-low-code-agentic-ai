@@ -6,6 +6,10 @@ Prompt at https://gemini.google.com/
 
 Google Nano Banana (like MidJourney, DALL·E, or Stable Diffusion) responds to highly descriptive prompts. The more structured, visual, and contextual your input, the closer the output matches your intent.
 
+[10 Best Google Gemini Ai Photo Editing Prompts For Men To Create 4k Hd Portraits](https://neolifehospital.in/10-best-google-gemini-ai-photo-editing-prompts-for-men/)
+
+[Top 30 New Trending Gemini AI Photo Editing Prompts for Girl's: Viral Selfie Ideas 2025](https://www.freejobalert.com/article/new-trending-gemini-ai-photo-editing-prompts-for-girls-19256)
+
 ---
 
 ## Core Principles

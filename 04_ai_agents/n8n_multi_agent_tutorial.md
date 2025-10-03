@@ -1,6 +1,6 @@
 # n8n Multi‑Agent Tutorial: Multi‑Agent Newsletter Automation (Beginner‑Friendly)
 
-[[The Tutorial is based on this Video: Watch Me Build a Multi-Agent Newsletter System in n8n (step-by-step)](https://www.youtube.com/watch?v=pxzo2lXhWJE)
+[The Tutorial is based on this Video: Watch Me Build a Multi-Agent Newsletter System in n8n (step-by-step)](https://www.youtube.com/watch?v=pxzo2lXhWJE)
 
 > Build a 3‑agent workflow in n8n that researches, drafts, and formats a newsletter, then creates a Gmail draft for human review. We’ll follow the video’s flow **and** fill in the missing pieces (prompts, schemas, expressions, error‑handling, hosting, and security). Yes, like adding fries to a perfectly good burger 🍟.
 
@@ -29,7 +29,7 @@ Schedule Trigger
   - **Enable Community Nodes**: *Settings → Community Nodes → Allow installation from community*. No community, no party 🎉.
 - **Credentials** you’ll need:
   - **Tavily** API key (free tier available). Used for web search. Like a librarian who doesn’t shush you.
-  - **OpenRouter** API key (or your preferred model provider). Used by all AI agents.
+  - **GEMINI** API key (or your preferred model provider). Used by all AI agents.
   - **Gmail** (OAuth) to create a **Draft**. It’s like sending an email… but with commitment issues.
 - **Optional**: A test inbox, e.g., a secondary Gmail account.
 
@@ -50,12 +50,17 @@ Set credentials inside n8n. Avoid hard‑coding keys—secrets hate attention. �
 
 ## Step‑by‑Step Build
 
-### 1) Schedule Trigger (weekly)
-- **Node**: *Schedule Trigger*
-- **Every**: 1 week; **On**: Sunday; **Time**: 00:00 (adjust to your timezone)
-- Leave **Active** off while building. Like removing the car keys before opening the hood. 🧰
 
-### 2) Initial Research (Tavily)
+### 1. Schedule Trigger
+
+- **Node:** `Schedule Trigger`
+- **Purpose:** Starts the workflow every week.
+- **Every**: 1 week; **On**: Sunday; **Time**: 00:00 (adjust to your timezone)
+- **Notes:** Leave **Active** off while building. Like removing the car keys before opening the hood. 🧰
+
+---
+
+### 2. Initial Research (Tavily)
 - **Node**: *Tavily → Search*
 - **Query**: your niche (e.g., `AI adoption for small businesses`)
 - **Options**:
@@ -65,36 +70,35 @@ Set credentials inside n8n. Avoid hard‑coding keys—secrets hate attention. �
   - *include_raw_content*: `false` (we’ll enable raw later)
 - **Rename**: `Initial Research`
 - **Tip**: *Pin Data* after a good run to speed up testing. Your CPU will send a thank‑you note. 💌
+---
 
-### 3) Agent 1 — Planning Agent (Title + Topics)
-- **Node**: *AI Agent*
-- **Chat Model**: *OpenRouter → gpt‑5‑mini* (or your favorite; lower cost is fine here)
-- **User Message**: Provide the initial research articles in a clean, readable list. Use a small **Code** node before the agent to format the Tavily array:
+### 3. Agent 1 — Planning Agent (Title + Topics)
 
-**Node**: *Code* (JavaScript) → `Format Initial Research`
-```js
-// Input: 1 item with Tavily results under items[0].json.results (fallbacks included)
-const res = (items[0].json.results || items[0].json.data || items.map(i => i.json)).slice(0, 10);
-function line(r, i){
-  const published = r.publishedDate || r.published_time || r.date || "";
-  const snippet = r.content || r.snippet || r.summary || "";
-  return `[${i+1}] ${r.title || "Untitled"}\nURL: ${r.url}\nPublished: ${published}\nSnippet: ${snippet}`;
-}
-const formatted = res.map(line).join("\n\n");
-return [{ json: { formatted, count: res.length } }];
+- **Node:** `AI Agent` (rename to `Planning Agent`)
+- **Purpose:** Generates the newsletter edition **title** and exactly **3 topics**.
+- **Chat Model:** `models/gemini-2.5-pro` (or your provider/model)
+- **User Prompt:**
+
+```text
+Here are recent articles to consider:
+
+{{ $json.results.map(item => JSON.stringify(item, null, 2)).join("\n\n") }}
 ```
-- **Agent → User Message** (Expression):
-```
-Here are recent articles to consider:\n\n{{$node["Format Initial Research"].json["formatted"]}}
-```
-- **Agent → System Message** (paste):
-```
-You are an expert newsletter planner. You receive 3–5 short article digests (title, URL, published date, snippet) from the past week.
-Task: propose a catchy edition title (≤ 80 chars) and exactly 3 concise topics (each 3–5 words) that reflect distinct angles for our audience of small‑business leaders.
+
+- **System Prompt:**
+
+```text
+You are an expert newsletter planner. You receive 3–5 short article digests (title, URL, published date, content) from the past week.
+
+Task: 
+propose a catchy edition title (≤ 80 chars) and exactly 3 concise topics (each 3–5 words) that reflect distinct angles for our audience of small-business leaders.
+
 Constraints: unique topics; no duplicates; no clickbait; be informative.
 Output only via the required schema (no extra text).
 ```
+
 - **Require specific output format**: *ON* → **Structured Output Parser** → *Define using JSON Schema*:
+
 ```json
 {
   "type": "object",
@@ -111,49 +115,53 @@ Output only via the required schema (no extra text).
   "required": ["title", "topics"]
 }
 ```
-- **Rename**: `Planning Agent`
-- *Pin Data* after you like the output. Like bookmarking a great pizza place. 🍕
 
-### 4) Split Topics → Items
+- Pin Data after you like the output. Like bookmarking a great pizza place. 🍕
+
+---
+
+### 4. Split Out (Topics)
+
 - **Node**: *Item Lists → Split Out Items*
-- **Source**: `{{$node["Planning Agent"].json["topics"]}}`
-- This yields 3 items (one per topic). Like turning a pie into slices—equally delicious. 🥧
+- **Purpose:** Turn the 3 topics into three separate items so each can be researched/written independently.
+- **Source/Field to split:** `{{$node["Planning Agent"].json["topics"]}}` (or `output.topics` depending on your agent node output)
+- **Result:** 3 items, one per topic.
 
-### 5) Deeper Research per Topic (Tavily)
-- **Node**: *Tavily → Search*
-- **Query**: `{{$json}}` (the topic string)
-- **Options**:
-  - *time_range*: `month`
-  - *max_results*: `5`
-  - *include_raw_content*: `true` (important for drafting)
-- **Rename**: `Topic Research`
-- *Pin Data* after a healthy run. It’s your workflow’s multivitamin. 💊
+---
 
-### 6) Agent 2 — Section Writer (3 passes)
-- **Node**: *AI Agent*
-- **Chat Model**: same as Agent 1 (cost‑efficient)
-- **Pre‑format research**: Add a *Code* node `Format Topic Research` before the agent:
-```js
-// Input: 1 item per topic with Tavily results at items[0].json.results
-const res = items[0].json.results || [];
-function line(r, i){
-  const raw = r.raw_content || r.content || r.snippet || "";
-  return `• ${r.title || "Untitled"} (URL: ${r.url})\n${raw.slice(0, 1200)}...`;
-}
-const formatted = res.slice(0, 6).map(line).join("\n\n");
-return [{ json: { topic: items[0].json.query || items[0].json.topic || $json, formatted } }];
-```
-- **Agent → User Message** (Expression):
-```
-Topic: {{$node["Format Topic Research"].json["topic"]}}
+### 5. Deeper Research per Topic (Tavily Search)
+
+- **Node:** `Tavily → Search` (rename to `Topic Research`)
+- **Purpose:** Run deeper searches for each topic item to gather sources and raw content.
+- **Query:** set to the current item (e.g., `={{ $json }}` or `={{ $json.query }}` depending on the split node's output)
+- **Options:**
+  - `time_range`: `"month"`
+  - `max_results`: `5`
+  - `include_raw_content`: `true`
+- Pin Data after a healthy run. It’s your workflow’s multivitamin. 💊
+
+---
+
+### 6. Agent 2 — Section Writer (3 passes)
+
+- **Node:** `AI Agent` (rename to `Section Writer`)
+- **Purpose:** Using the topic-specific research, write a single, standalone newsletter section (one per topic).
+- **Chat Model:** `models/gemini-2.5-pro` (use a cost-efficient model here)
+- **User Prompt:**
+
+```text
+Topic: {{ $json.query }}
 
 Use these sources to write one standalone section:
 
-{{$node["Format Topic Research"].json["formatted"]}}
+{{ $json.results.map(item => JSON.stringify(item,null,2)).join("\n\n") }}
 ```
-- **Agent → System Message**:
-```
+
+- **System Prompt:**
+
+```text
 You are a professional newsletter section writer. Write ONE self-contained section (350–500 words) for small-business leaders.
+
 Requirements:
 - Start with an H2 heading matching the Topic (e.g., “## <topic>”).
 - Synthesize facts from the provided sources (don’t invent).
@@ -162,64 +170,87 @@ Requirements:
 - Tone: clear, expert, engaging. No overall intro or conclusion; just this section.
 - Output plain Markdown (the editor will convert to HTML).
 ```
-- **Rename**: `Section Writer`
-- Run on each topic (it will execute 3 times). Like a hat trick, but for keyboards. 🎩
 
-### 7) Aggregate Sections (3 → 1)
+- **Notes:** This node will run once per topic (3 executions total) and should return a Markdown string per item.
+
+---
+
+### 7. Aggregate Sections (3 → 1)
+
 - **Node**: *Aggregate*
 - **Combine**: field `output` (or the agent’s text field) into an array
 - **Result**: one item with `sections: [sec1, sec2, sec3]`
 - **Rename**: `Sections`
 - Your sections are now roommates. Hopefully tidy ones. 🧹
 
-### 8) Agent 3 — Editor (HTML + Subject via structured output)
-- **Node**: *AI Agent*
-- **Chat Model**: *OpenRouter → gpt‑5* (use a stronger model for style/HTML)
-- **User Message** (Expression; join sections with blank lines):
-```
-Title candidate: {{$node["Planning Agent"].json["title"]}}
+---
 
-Sections:
-{{$node["Sections"].json["output"].join("\n\n\n")}}
+### 8. Agent 3 — Editor (HTML + Subject via structured output)
+
+- **Node:** `AI Agent` (rename to `Editor`)
+- **Purpose:** Convert the collected sections into final HTML and produce an email subject and body.
+- **Chat Model:** a stronger model such as `models/gemini-2.5-pro` or a higher-quality provider model for layout/styling
+- **User Prompt:**
+
+```text
+Ttile: {{ $('Planning Agent').item.json.output.title }}
+
+Sections: 
+{{ $json.output.join("\n\n\n\n") }}
 ```
-- **System Message** (paste):
-```
+
+- **System Prompt:**
+
+```text
 You are the newsletter editor and layout stylist.
-Input: one title candidate and 3 Markdown sections with [n] footnotes.
-Produce:
-1) subject — an email subject (≤ 80 chars, no emojis),
-2) content — VALID, responsive HTML for the newsletter.
-HTML Requirements:
-- Include: header with title + date, short intro paragraph, the 3 sections (convert Markdown to HTML), a “Key Sources” section that deduplicates and numbers links, and a short friendly sign-off.
-- Typography: use <h1>/<h2>, <p>, <ul>/<ol>, <a>. Inline CSS for readability (max-width container, readable font size/line-height).
-- Links: ensure anchors use rel="noopener noreferrer" and target="_blank".
-- Accessibility: semantic headings; alt text if any images appear (don’t add images unless supplied).
-- No external CSS/JS. No tracking pixels.
-- Output ONLY via the required schema.
+
+**Input:** one title candidate and 3 Markdown sections with [n] footnotes.
+
+**Output:**
+1. **subject** — an email subject (≤ 80 chars, no emojis).
+2. **content** — a VALID, responsive HTML **body only** (no `<!DOCTYPE>`, `<html>`, or `<head>`).
+
+**HTML Requirements:**
+* Structure: include a header with the title + current date {{ $now.format("DDD") }}, a short intro paragraph, the 3 sections (convert Markdown to HTML), a “Key Sources” section that deduplicates and numbers links, and a short friendly sign-off.
+* Typography: use `<h1>/<h2>`, `<p>`, `<ul>/<ol>`, `<a>`. Apply inline CSS for readability (max-width container, readable font size and line-height).
+* Links: anchors must include `rel="noopener noreferrer"` and `target="_blank"`.
+* Accessibility: semantic headings; include `alt` text if images appear (don’t invent images).
+* Restrictions: no external CSS/JS, no tracking pixels.
 ```
-- **Require specific output format**: *ON* → **Structured Output Parser** → JSON Schema:
+
+- **Require specific output format**: *ON* → **Structured Output Parser** → *Define using JSON Schema*:
+
 ```json
 {
   "type": "object",
   "additionalProperties": false,
   "properties": {
-    "subject": { "type": "string", "maxLength": 80 },
-    "content": { "type": "string", "description": "Complete HTML body" }
+    "subject": {
+      "type": "string",
+      "description": "the email subject"
+    },
+    "content": {
+      "type": "string",
+      "description": "the newsletter content"
+    }
   },
   "required": ["subject", "content"]
 }
 ```
-- **Rename**: `Editor`
-- If output seems slow, pin it while developing. Patience is a feature, not a bug. 🐢
 
-### 9) Gmail — Create Draft
-- **Node**: *Gmail → Create Draft*
-- **To**: your testing inbox
-- **Subject**: `{{$node["Editor"].json["subject"]}}`
-- **Message**: `{{$node["Editor"].json["content"]}}`
-- **Email Type**: `HTML`
-- **Rename**: `Create Draft`
-Draft will appear in Gmail, ready for human eyes (and hopefully applause). 👀
+- **Notes:** The Editor should return a single item with `output.subject` and `output.content` (HTML body). Pin the output while fine-tuning.
+
+---
+
+### 9. Create a Draft (Gmail)
+
+- **Node:** `Gmail → Create Draft` (rename to `Create Draft`)
+- **Purpose:** Save the final HTML newsletter to Gmail as a draft for human review.
+- **Config:**
+  - **To:** your testing inbox (or leave blank for drafts)
+  - **Subject:** `={{ $json.output.subject }}` (map from Editor node)
+  - **Email type:** `html`
+  - **Message:** `={{ $json.output.content }}`
 
 ---
 
@@ -294,8 +325,14 @@ Draft will appear in Gmail, ready for human eyes (and hopefully applause). 👀
   "type": "object",
   "additionalProperties": false,
   "properties": {
-    "subject": { "type": "string", "maxLength": 80 },
-    "content": { "type": "string" }
+    "subject": {
+      "type": "string",
+      "description": "the email subject"
+    },
+    "content": {
+      "type": "string",
+      "description": "the newsletter content"
+    }
   },
   "required": ["subject", "content"]
 }
@@ -318,15 +355,12 @@ You are the newsletter editor and layout stylist... (see Agent 3 above)
 ### Expressions / Joins
 - Join sections for the Editor:
 ```
-{{$node["Sections"].json["output"].join("\n\n\n")}}
+{{ $json.output.join("\n\n\n\n") }}   (Map from Sections node)
 ```
 - Pull title from Planning:
 ```
 {{$node["Planning Agent"].json["title"]}}
 ```
-
-### Code Node — Formatters
-See **Format Initial Research** and **Format Topic Research** in the steps above; paste as‑is. They turn raw arrays into neat strings the agents can digest (like cutting steak into bites 🥩).
 
 ---
 
@@ -336,4 +370,3 @@ See **Format Initial Research** and **Format Topic Research** in the steps above
 3) Log runs + feedback to evolve prompts.
 
 Congrats—you just built a practical multi‑agent system in n8n. High‑five your future self for the hours you’ll save ✋.
-
