@@ -161,8 +161,8 @@ Before diving into prompt techniques, understand these key parameters that contr
 - Set appropriately for your task needs
 
 ### Top-K and Top-P (Nucleus Sampling)
-- **Top-K**: Limits choices to top K most likely tokens
-- **Top-P**: Limits choices based on cumulative probability
+- **Top-K**: Limits choices to top K most likely tokens (**Only consider the k most likely next words (e.g., top-5 words)**)
+- **Top-P**: Limits choices based on cumulative probability (**Keep adding words to the list until you reach p% total probability (like filling a bucket to 90%)**)
 - Work together with temperature to control randomness
 
 **Recommended starting points:**
