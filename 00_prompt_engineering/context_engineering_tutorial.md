@@ -321,3 +321,65 @@ Context engineering represents the evolution of prompt engineering for complex A
 Remember: Context engineering isn't just about writing better prompts—it's about architecting comprehensive instruction systems that enable AI agents to operate effectively and safely in real-world scenarios.
 
 The field is rapidly evolving, so stay updated with the latest frameworks, tools, and best practices. Start simple, test thoroughly, and iterate based on real-world performance.
+
+---
+
+## [Must Read: Effective context engineering for AI agents](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents)
+
+I'll fetch and summarize that article for you.Let me try searching for information about this article:## Summary: Effective Context Engineering for AI Agents
+
+Context engineering represents the evolution from prompt engineering to a broader discipline focused on optimizing the entire set of tokens available to an AI model during inference. Rather than just crafting perfect prompts, it's about answering: "What configuration of context is most likely to generate our model's desired behavior?"
+
+### Key Concepts
+
+**From Prompt to Context Engineering**
+While prompt engineering focuses on writing effective instructions (particularly system prompts), context engineering manages the entire context state including system instructions, tools, external data, message history, and more. As agents operate over multiple turns and longer time horizons, they generate increasingly more data that must be cyclically refined and curated.
+
+**Core Challenge: Limited Attention**
+Despite growing context windows, LLMs experience "context rot" where the ability to accurately recall information decreases as token count increases, stemming from architectural constraints where every token attends to every other token. This makes context a precious, finite resource that must be carefully managed.
+
+### Best Practices
+
+**System Prompt Design**
+System prompts should strike the "Goldilocks zone" - specific enough to guide behavior effectively, yet flexible enough to provide strong heuristics rather than brittle, hardcoded logic. Avoid two extremes: overly complex if-else statements and vague high-level guidance that assumes shared context.
+
+**Tool and Resource Management**
+Tools should use agent context judiciously through pagination, range selection, filtering, and truncation with sensible defaults to prevent consuming excessive tokens. Tool descriptions and specifications require careful prompt engineering with unambiguous naming and clear documentation, as if explaining to a new team member.
+
+**Strategic Context Curation**
+The goal is finding the smallest set of high-signal tokens that maximize the likelihood of desired outcomes. This involves determining what information should be loaded upfront versus fetched just-in-time, and continuously refining what stays in the context window as agents loop through multiple inference cycles.
+
+This methodology is foundational for building reliable, long-running AI agents that can handle complex tasks without exhausting their context windows or losing critical information.
+
+## What the article says — in brief from another viewpoint
+
+* **Context engineering > prompt engineering.** As agents act over many turns, the challenge shifts from wording a single prompt to curating *everything* the model sees each step (system instructions, tool outputs, history, external data). The job is to assemble the smallest, highest-signal token set that maximizes correct behavior. ([Anthropic][1])
+
+* **Context is finite and degrades.** LLMs have an “attention budget”; performance can drop as you add more tokens (“context rot”), due to transformer attention scaling and training distributions favoring shorter sequences. Treat context as scarce and manage it deliberately. ([Anthropic][1])
+
+* **Anatomy of effective context.**
+
+  * **System prompt:** clear, sectioned, and at the right “altitude”—not brittle if/else logic, not vague philosophy. Minimal but sufficient. ([Anthropic][1])
+  * **Tools:** few, well-scoped, token-efficient, with unambiguous parameters; avoid bloated overlapping toolsets. ([Anthropic][1])
+  * **Examples:** use a small set of canonical few-shot examples instead of stuffing edge cases. Keep message history tight. ([Anthropic][1])
+
+* **Retrieval for agents: “just-in-time” beats stuffing.** Move beyond only pre-inference RAG: keep lightweight references (paths, queries, links) and load details at runtime via tools. A hybrid of small upfront context + on-demand exploration often works best. Principle: progressive disclosure to keep working memory clean. ([Anthropic][1])
+
+* **Long-horizon work (minutes to hours) needs special tactics:**
+
+  1. **Compaction:** periodically summarize the running trace and restart with the distilled state; first maximize recall, then prune. Clear old tool call outputs. ([Anthropic][1])
+  2. **Structured note-taking (agentic memory):** persist notes (e.g., TODOs, decisions) outside the context window and re-inject later. ([Anthropic][1])
+  3. **Sub-agent architectures:** specialized workers explore deeply, then return concise digests to a coordinator agent—clean separation of concerns and context. ([Anthropic][1])
+
+* **Operating principle:** As models improve, they need less prescriptive scaffolding, but the north star remains the same—*do the simplest thing that works* and treat context as a precious resource at every turn. ([Anthropic][1])
+
+# Practical checklist you can apply
+
+1. Write a minimal, sectioned system prompt; test on hard cases, add only targeted guidance. ([Anthropic][1])
+2. Trim your toolset; make each tool obvious to pick and token-efficient. ([Anthropic][1])
+3. Keep 3–7 canonical examples; remove noisy edge-case sprawl. ([Anthropic][1])
+4. Start with a tiny upfront bundle (instructions + immediate refs), then fetch details *just in time* via tools. ([Anthropic][1])
+5. For long tasks, schedule compaction, maintain NOTES.md-style memory, and consider sub-agents for deep dives. ([Anthropic][1])
+
+[1]: https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents "Effective context engineering for AI agents \ Anthropic"
+
