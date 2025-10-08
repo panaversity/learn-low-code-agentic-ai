@@ -25,7 +25,7 @@ A chat-driven scheduling agent: you type “book a 30-min call with Laura next T
 
 # 1) Create the workflow (the “agent’s house”)
 
-1. **New Workflow →** name it **Appointment Agent** (because “Calendar Wizard 9000” scares clients).
+1. **New Workflow →** name it **Appointment Agent** (because “Calendar Wizard 9000” scares clients). Important: In workflow settings, change time zone to Asia/Karachi as by default it is America/New York, otherwise the schedule time of events will be wrong.
 2. **Add “Chat Trigger”** (n8n Chat) so you can talk to your agent from the built-in chat panel.
 3. **Add “Respond to Chat”** (we’ll connect it later) to stream replies like a friendly barista.
 
