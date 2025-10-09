@@ -29,19 +29,10 @@ Topics to be covered in this page by Qasim:
 a. Vector databases
 b. Memory
 
-6. Aneeq: Langchain in n8n
-https://github.com/panaversity/learn-low-code-agentic-ai/tree/main/04_ai_agents#step-4-langchain-in-n8n
-
-7. Hammad: LangSmith
+6. Hammad: LangSmith
 https://github.com/panaversity/learn-low-code-agentic-ai/tree/main/04_ai_agents#step-5-langsmith-in-n8n
 
-8. Ameen: Five Single AI Agent Architectures
-https://github.com/panaversity/learn-low-code-agentic-ai/tree/main/04_ai_agents#step-8-ai-agent-architectures
-
-9. Qasim: Three Multiple AI Agents Architectures
-https://github.com/panaversity/learn-low-code-agentic-ai/tree/main/04_ai_agents#step-8-ai-agent-architectures
-
-10. Junaid: Evaluations
+7. Junaid: MCP
 https://github.com/panaversity/learn-low-code-agentic-ai/blob/main/04_ai_agents/evals.md
 
 
