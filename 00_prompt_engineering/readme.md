@@ -834,7 +834,7 @@ Because a router chooses experts *based on your tokens*, small wording changes c
    * “Role: Financial analyst. Task: 10-K variance analysis. Output: tabular summary + bullet risks.”
 2. **Use unambiguous, domain-specific vocabulary.** The router keys off tokens; plain, on-topic terms beat clever phrasing or euphemisms.
 3. **Separate mixed tasks.** If you combine coding, legal, and marketing in one shot, the router may oscillate experts. Break it into steps or run sequential prompts.
-4. **Match examples to the task.** Few-shot exemplars should be in the *same domain, format, and language* as your goal—this strongly reinforces the intended experts.
+4. **Match examples to the task.** Few-shot examples should be in the *same domain, format, and language* as your goal—this strongly reinforces the intended experts.
 5. **Be explicit about language and style.** Start with: “Language: Urdu. Style: concise, technical.” Multilingual MoE models often have language-specialized experts.
 6. **Stabilize when you need consistency.** Lower temperature/top-p reduces token drift, which indirectly reduces expert churn across the generation.
 7. **Keep retrieval context clean.** In RAG, put a short task summary *before* the docs, and keep the docs on-topic; noisy context can misroute tokens.
